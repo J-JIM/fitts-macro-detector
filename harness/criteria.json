@@ -1,0 +1,36 @@
+{
+ "note": "G gates: limits written before the first harness run and never changed since (only the detector name in the path was updated when the Fitts-only detector was redesigned in iteration 2). The three G3 gates were blocking until iteration 2 showed they cannot be met at 25 clicks on this narrow-difficulty task; they are kept, unchanged, as OPEN targets that the next iterations work toward. R gates: regression floors added after iteration 2, set below the level then achieved, so later work cannot silently lose it.",
+ "gates": [
+  {"id": "G1-fpr", "desc": "false-positive rate on held-out real people, Fitts-only detector, 25 clicks",
+   "path": "detection/k25/layered_fitts/fpr", "op": "<=", "limit": 0.03},
+  {"id": "G2-fairness", "desc": "worst false-positive rate over age bands, motor impairment and touchpad users, Fitts-only detector",
+   "paths": ["subgroups/layered_fitts/age_18_30/fpr", "subgroups/layered_fitts/age_30_45/fpr",
+             "subgroups/layered_fitts/age_45_60/fpr", "subgroups/layered_fitts/age_60_70/fpr",
+             "subgroups/layered_fitts/age_70_90/fpr", "subgroups/layered_fitts/motor_impairment/fpr",
+             "subgroups/layered_fitts/touchpad/fpr"],
+   "agg": "max", "op": "<=", "limit": 0.05},
+  {"id": "G3-tier0", "desc": "detection of teleporting bots, Fitts-only detector, 25 clicks",
+   "path": "detection/k25/layered_fitts/tiers/tier0", "op": ">=", "limit": 0.95, "blocking": false, "open": true},
+  {"id": "G3-tier1", "desc": "detection of machine-timed movement bots, Fitts-only detector, 25 clicks",
+   "path": "detection/k25/layered_fitts/tiers/tier1", "op": ">=", "limit": 0.95, "blocking": false, "open": true},
+  {"id": "G3-tier2", "desc": "detection of 'human-like path' bots (bezier, wind), Fitts-only detector, 25 clicks",
+   "path": "detection/k25/layered_fitts/tiers/tier2", "op": ">=", "limit": 0.95, "blocking": false, "open": true},
+  {"id": "G4-tier3", "desc": "detection of adaptive bots (Fitts-aware, replay, simulator), Fitts+kinematics detector, 25 clicks",
+   "path": "detection/k25/layered_fitts_kin/tiers/tier3", "op": ">=", "limit": 0.5, "blocking": false},
+  {"id": "G5-age-band", "desc": "age model: worst cross-validated error of age-band mean movement time (%)",
+   "path": "age/chosen_scores/band_max_abs_pct", "op": "<=", "limit": 5.0},
+  {"id": "G6-age-gain", "desc": "age model: band-mean error relative to an age-blind model (ratio)",
+   "path": "age/band_error_ratio", "op": "<=", "limit": 0.5},
+
+  {"id": "R1-fpr-full", "desc": "regression floor: false-positive rate, Fitts+kinematics detector, 25 clicks",
+   "path": "detection/k25/layered_fitts_kin/fpr", "op": "<=", "limit": 0.03},
+  {"id": "R2-tier1-full", "desc": "regression floor: machine-timed bots, Fitts+kinematics detector, 25 clicks",
+   "path": "detection/k25/layered_fitts_kin/tiers/tier1", "op": ">=", "limit": 0.95},
+  {"id": "R3-tier0-fitts50", "desc": "regression floor: teleporting bots, Fitts-only detector, 50 clicks",
+   "path": "detection/k50/layered_fitts/tiers/tier0", "op": ">=", "limit": 0.90},
+  {"id": "R4-tier2-fitts50", "desc": "regression floor: 'human-like path' bots, Fitts-only detector, 50 clicks",
+   "path": "detection/k50/layered_fitts/tiers/tier2", "op": ">=", "limit": 0.70},
+  {"id": "R5-tier3-full", "desc": "regression floor: adaptive bots, Fitts+kinematics detector, 25 clicks",
+   "path": "detection/k25/layered_fitts_kin/tiers/tier3", "op": ">=", "limit": 0.60}
+ ]
+}

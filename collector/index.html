@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>fittsguard collector</title>
+<style>
+  :root { color-scheme: light dark; --bg:#f6f7f9; --fg:#16181d; --mut:#667085; --acc:#2563eb; --card:#fff; --line:#d9dde5; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#101216; --fg:#e7e9ee; --mut:#98a2b3; --acc:#6ea8fe; --card:#191c22; --line:#2b303a; } }
+  html, body { margin:0; height:100%; background:var(--bg); color:var(--fg); font:15px/1.5 system-ui, sans-serif; }
+  #bar { display:flex; gap:12px; align-items:center; flex-wrap:wrap; padding:10px 16px; border-bottom:1px solid var(--line); background:var(--card); }
+  #bar label { color:var(--mut); font-size:13px; }
+  #bar input, #bar select { font:inherit; padding:4px 8px; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--fg); width:90px; }
+  button { font:inherit; padding:6px 14px; border-radius:6px; border:1px solid var(--acc); background:var(--acc); color:#fff; cursor:pointer; }
+  button[disabled] { opacity:.4; cursor:default; }
+  #status { margin-left:auto; color:var(--mut); font-variant-numeric:tabular-nums; }
+  #stage { position:relative; height:calc(100% - 54px); overflow:hidden; touch-action:none; cursor:crosshair; }
+  #target { position:absolute; border-radius:50%; background:var(--acc); display:none; pointer-events:none; }
+  #msg { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center; padding:24px; color:var(--mut); pointer-events:none; }
+</style>
+</head>
+<body>
+<div id="bar">
+  <label>나이 <input id="age" type="number" min="5" max="100" placeholder="선택"></label>
+  <label>장치 <select id="device"><option>mouse</option><option>trackpad</option><option>other</option></select></label>
+  <label>시행 수 <input id="n" type="number" min="10" max="300" value="60"></label>
+  <button id="go">시작</button>
+  <button id="save" disabled>JSON 저장</button>
+  <span id="status">0 / 0</span>
+</div>
+<div id="stage"><div id="target"></div>
+  <div id="msg">「시작」을 누른 뒤, 나타나는 원을 평소 속도로 정확하게 클릭하세요.<br>원의 크기와 거리는 매번 달라집니다. 빗나가도 다음 원으로 넘어갑니다.</div>
+</div>
+<script>
+// Records a serial point-and-click task in the fittsguard Session format.
+// Time: seconds on the performance.now() clock, relative to each trial's start
+// (the previous button-down). Positions: CSS px inside the stage.
+const WIDTHS = [16, 24, 32, 48, 64, 96];
+const stage = document.getElementById('stage'), targetEl = document.getElementById('target');
+const msg = document.getElementById('msg'), statusEl = document.getElementById('status');
+let trials = [], total = 0, cur = null, running = false, lastPos = null;
+
+function place(prev) {
+  const r = stage.getBoundingClientRect();
+  const w = WIDTHS[Math.floor(Math.random() * WIDTHS.length)];
+  const dMax = Math.min(900, Math.hypot(r.width, r.height) * 0.8);
+  for (let i = 0; i < 300; i++) {
+    const d = Math.exp(Math.log(80) + Math.random() * (Math.log(dMax) - Math.log(80)));
+    const a = Math.random() * 2 * Math.PI;
+    const x = prev.x + d * Math.cos(a), y = prev.y + d * Math.sin(a);
+    if (x >= w && x <= r.width - w && y >= w && y <= r.height - w) return { x, y, w };
+  }
+  return { x: r.width / 2, y: r.height / 2, w };
+}
+function show(tg) {
+  Object.assign(targetEl.style, { display: 'block', width: tg.w + 'px', height: tg.w + 'px',
+    left: (tg.x - tg.w / 2) + 'px', top: (tg.y - tg.w / 2) + 'px' });
+}
+function begin(t0, pos) {
+  const tg = place(pos);
+  cur = { t0, t: [0], x: [pos.x], y: [pos.y], target: tg, click: null };
+  show(tg);
+}
+function local(e) { const r = stage.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+
+stage.addEventListener('pointermove', e => {
+  lastPos = local(e);
+  if (!running || !cur) return;
+  const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+  for (const ev of (evs.length ? evs : [e])) {
+    const p = local(ev), t = (ev.timeStamp - cur.t0) / 1000;
+    if (t > cur.t[cur.t.length - 1]) { cur.t.push(t); cur.x.push(p.x); cur.y.push(p.y); }
+  }
+});
+stage.addEventListener('pointerdown', e => {
+  if (!running) return;
+  const p = local(e);
+  if (!cur) { begin(e.timeStamp, p); msg.style.display = 'none'; return; }   // first click only sets the clock
+  cur.click = { t_down: (e.timeStamp - cur.t0) / 1000, t_up: null, x: p.x, y: p.y };
+  cur.downStamp = e.timeStamp;
+});
+stage.addEventListener('pointerup', e => {
+  if (!running || !cur || !cur.click) return;
+  cur.click.t_up = (e.timeStamp - cur.t0) / 1000;
+  const done = cur;
+  trials.push({ t: done.t, x: done.x, y: done.y, target: done.target, click: done.click });
+  statusEl.textContent = trials.length + ' / ' + total;
+  if (trials.length >= total) return finish();
+  begin(done.downStamp, { x: done.click.x, y: done.click.y });
+});
+function finish() {
+  running = false; cur = null; targetEl.style.display = 'none';
+  msg.style.display = 'flex'; msg.textContent = '끝났습니다. 「JSON 저장」을 눌러 파일을 받으세요.';
+  document.getElementById('save').disabled = false; document.getElementById('go').disabled = false;
+}
+document.getElementById('go').onclick = () => {
+  total = Math.max(10, Math.min(300, +document.getElementById('n').value || 60));
+  trials = []; cur = null; running = true;
+  statusEl.textContent = '0 / ' + total;
+  document.getElementById('go').disabled = true; document.getElementById('save').disabled = true;
+  msg.style.display = 'flex'; msg.textContent = '화면 아무 곳이나 한 번 클릭하면 첫 원이 나타납니다.';
+};
+document.getElementById('save').onclick = () => {
+  const age = +document.getElementById('age').value || null;
+  const session = { label: 'human', family: 'collector', subject: 'self-' + Date.now().toString(36), age,
+    meta: { device: document.getElementById('device').value, dpr: window.devicePixelRatio,
+            stage: [stage.clientWidth, stage.clientHeight], ua: navigator.userAgent, recorded: new Date().toISOString() },
+    trials };
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(session)], { type: 'application/json' }));
+  a.download = 'fitts_session_' + session.subject + '.json'; a.click();
+};
+</script>
+</body>
+</html>

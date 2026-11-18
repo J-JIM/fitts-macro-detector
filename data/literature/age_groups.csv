@@ -1,0 +1,26 @@
+# Group means from published studies, used ONLY as within-study ratios between age groups
+# (each study gets its own intercept; absolute values are never compared across studies).
+# Every row was read from the primary source (table/section given in `where`), except where `note` says otherwise.
+# metric: mt  = a time measure (ms), larger = slower      tap = repetitive tapping rate (Hz), larger = faster
+#         tap_abs = absolute young-adult tapping rate used as the click-rate baseline
+study,metric,age,value,n,device,where,note,source
+Hertzum2010,mt,12.83,1021,12,mouse,"Table 3 (movement 683 + selection 338 ms)",2-D centre-out pointing; ages 12-14,https://doi.org/10.1080/10447318.2010.487198
+Hertzum2010,mt,28.75,1078,12,mouse,"Table 3 (movement 687 + selection 391 ms)",ages 25-33,https://doi.org/10.1080/10447318.2010.487198
+Hertzum2010,mt,62.67,1496,12,mouse,"Table 3 (movement 918 + selection 578 ms)",ages 61-69,https://doi.org/10.1080/10447318.2010.487198
+Hourcade2003,mt,4.42,3764,13,mouse,"Tables 5-9: a=1819 b=648.5 (button release), evaluated at ID=3","technical-report version of Hourcade et al. TOCHI 2004; 1-D discrete pointing",https://drum.lib.umd.edu/handle/1903/535
+Hourcade2003,mt,5.5,2575,13,mouse,"Tables 5-9: a=1105 b=490.0 (button release), evaluated at ID=3",,https://drum.lib.umd.edu/handle/1903/535
+Hourcade2003,mt,20.5,838,13,mouse,"Tables 5-9: a=310.0 b=176.0 (button release), evaluated at ID=3",ages 19-22,https://drum.lib.umd.edu/handle/1903/535
+Worden1997,mt,23.4,759,16,mouse,Table 1,"1-D discrete; older group had only 6 h of mouse experience (experience confound)",https://www.chi1997.chistatic.hosting.acm.org/proceedings/paper/nw.html
+Worden1997,mt,70.1,1893,16,mouse,Table 1,experience confound,https://www.chi1997.chistatic.hosting.acm.org/proceedings/paper/nw.html
+Findlater2013,mt,27.7,790,20,mouse,results text,"mean of pointing, steering, crossing, dragging; ages 19-51",https://faculty.washington.edu/wobbrock/pubs/chi-13.04.pdf
+Findlater2013,mt,74.3,1620,20,mouse,results text,ages 61-86,https://faculty.washington.edu/wobbrock/pubs/chi-13.04.pdf
+SleimenMalkoun2013,mt,26,401,10,stylus,"Table 1 (ID 5)",not a mouse: ratio only,https://doi.org/10.3389/fnagi.2013.00062
+SleimenMalkoun2013,mt,78,604,14,stylus,"Table 1 (ID 5)",not a mouse: ratio only,https://doi.org/10.3389/fnagi.2013.00062
+Teismann2022,tap,44,5.34,157,force sensor,Table 3,"max-speed index-finger tapping, right hand of right-handers; age band 37-50",https://doi.org/10.3389/fneur.2022.965031
+Teismann2022,tap,55,5.24,223,force sensor,Table 3,age band 50-60,https://doi.org/10.3389/fneur.2022.965031
+Teismann2022,tap,65,4.97,230,force sensor,Table 3,age band 60-70,https://doi.org/10.3389/fneur.2022.965031
+Kwon2022,tap,23.5,3.53,20,gyro sensor,Table 3,"thumb-index tapping (different task: ratio only); age band 20-27",https://doi.org/10.3233/THC-228011
+Kwon2022,tap,37,3.57,17,gyro sensor,Table 3,age band 30-44,https://doi.org/10.3233/THC-228011
+Kwon2022,tap,59.5,2.69,22,gyro sensor,Table 3,age band 50-69,https://doi.org/10.3233/THC-228011
+Kwon2022,tap,79.5,2.36,24,gyro sensor,Table 3,age band 70-89,https://doi.org/10.3233/THC-228011
+Heaton2021,tap_abs,37.15,4.947,183,manual counter,"Table 3: 49.47 taps per 10 s, dominant hand (SD 6.79)","Halstead-Reitan finger tapping, ages 20-55; used as the upper bound for repetitive clicking",https://doi.org/10.1080/13854046.2020.1713400

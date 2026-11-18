@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.DS_Store
+
+# third-party datasets are fetched by harness/fetch_data.py, never committed
+data/raw/
+data/processed/
+results/cache/

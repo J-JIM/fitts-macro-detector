@@ -1,0 +1,58 @@
+{
+ "baseline": {
+  "a": 0.3025389508021975,
+  "b": 0.13376797148834266,
+  "hold": 0.08740848902670025,
+  "cps": 4.947,
+  "cv_between": 0.2521202969901743,
+  "cv_hold": 0.3382837118743255,
+  "cv_cps": 0.12,
+  "source": "Findlater & Zhang 2020 (mouse, no motor impairment, age <= 30)"
+ },
+ "curves": {
+  "a": {
+   "dev_c": 1.7399983774595822,
+   "dev_tau": 3.1236347260401787,
+   "ageing": 0.0071838630377801145,
+   "knot": 30.0,
+   "age_min": 4.42,
+   "age_max": 83.0,
+   "se_log": 0.03268617514168576,
+   "child_se_log": 0.5105199486591728,
+   "source": "Findlater & Zhang 2020, 414 people; ages below 18 from 3 child groups in published studies (weak)"
+  },
+  "b": {
+   "dev_c": 1.7399983774595822,
+   "dev_tau": 3.1236347260401787,
+   "ageing": 0.0071838630377801145,
+   "knot": 30.0,
+   "age_min": 4.42,
+   "age_max": 83.0,
+   "se_log": 0.03268617514168576,
+   "child_se_log": 0.5105199486591728,
+   "source": "Findlater & Zhang 2020, 414 people; ages below 18 from 3 child groups in published studies (weak)"
+  },
+  "hold": {
+   "dev_c": 0.0,
+   "dev_tau": 2.5,
+   "ageing": 0.009456149152259554,
+   "knot": 30.0,
+   "age_min": 18.0,
+   "age_max": 83.0,
+   "se_log": 0.04960000137254572,
+   "child_se_log": 0.0,
+   "source": "Findlater & Zhang 2020, 414 people"
+  },
+  "tap": {
+   "dev_c": 0.0,
+   "dev_tau": 2.5,
+   "ageing": -0.005865777124200613,
+   "knot": 30.0,
+   "age_min": 23.5,
+   "age_max": 79.5,
+   "se_log": 0.09019127828043177,
+   "child_se_log": "literature ratios, 2 studies / 7 groups",
+   "source": ""
+  }
+ }
+}
